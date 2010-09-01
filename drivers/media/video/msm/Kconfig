@@ -22,10 +22,6 @@ config MSM_CAMERA_DEBUG
 	help
 	  Enable printk() debug for msm camera
 
-config MSM_CAMERA_OLD
-	bool "Use old camera implementation"
-	depends on MSM_CAMERA && ARCH_MSM7X00A
-	  
 config 720P_CAMERA
         bool "Qualcomm MSM camera with 720P video support"
         depends on MSM_CAMERA

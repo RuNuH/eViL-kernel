@@ -1416,6 +1416,7 @@ static boolean vfe_send_video_msg(struct msm_vfe_resp *rp,
 	       (void *)pPayload, sizeof(struct vfe_msg_output));
 
 	ctrl->encPath.ackPending = TRUE;
+	rp->phy.output_id = MSM_FRAME_PREV_2;
 
 	if (!(ctrl->vfeRequestedSnapShotCount <= 3) &&
 	    (ctrl->vfeOperationMode == VFE_START_OPERATION_MODE_SNAPSHOT))
@@ -1456,7 +1457,7 @@ static boolean vfe_send_preview_msg(struct msm_vfe_resp *rp,
 	memcpy(&(msg->_u), (void *)pPayload, sizeof(struct vfe_msg_output));
 
 	ctrl->viewPath.ackPending = TRUE;
-
+	rp->phy.output_id = MSM_FRAME_PREV_1;
 	if (!(ctrl->vfeRequestedSnapShotCount <= 3) &&
 	    (ctrl->vfeOperationMode == VFE_START_OPERATION_MODE_SNAPSHOT))
 		ctrl->viewPath.ackPending = TRUE;

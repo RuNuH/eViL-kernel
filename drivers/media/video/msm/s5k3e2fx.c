@@ -8,13 +8,14 @@
 #include <linux/uaccess.h>
 #include <linux/miscdevice.h>
 #include <media/msm_camera.h>
+#include <linux/slab.h>
 #include <mach/board.h>
 #include <mach/gpio.h>
 #include <mach/camera.h>
 #include <linux/clk.h>
 #include <linux/wakelock.h>
 #include <linux/earlysuspend.h>
-#include <linux/slab.h>
+
 
 static uint16_t g_usModuleVersion;	/*0: rev.4, 1: rev.5 */
 
@@ -47,11 +48,6 @@ static uint16_t g_usModuleVersion;	/*0: rev.4, 1: rev.5 */
 #define REG_GROUPED_PARAMETER_HOLD    0x0104
 #define GROUPED_PARAMETER_HOLD        0x01
 #define GROUPED_PARAMETER_UPDATE      0x00
-
-/* Greenish in low light */
-#define REG_MASK_CORRUPTED_FRAMES     0x0105
-#define MASK                          0x01
-#define NO_MASK                       0x00
 
 /* PLL Registers */
 #define REG_PRE_PLL_CLK_DIV           0x0305
@@ -825,438 +821,438 @@ struct s5k3e2fx_i2c_reg_conf lc_setting_evt4[] = {
 struct s5k3e2fx_i2c_reg_conf lc_setting_evt5[] = {
 /*EVT5 */
 /* LC setting Start */
-	 {0x3200, 0x00}, /* 100108 Modify LC setting DNP light source t75-r73*/
-	 {0x3201, 0x99},                                          
-	 {0x3202, 0xc1},                                          
-	 {0x3203, 0x0f},                                          
-	 {0x3204, 0xd0},                                          
-	 {0x3205, 0x1b},                                          
-	 {0x3206, 0x00},                                          
-	 {0x3207, 0x24},                                          
-	 {0x3208, 0x8d},                                          
-	 {0x3209, 0x0f},                                          
-	 {0x320a, 0xee},                                          
-	 {0x320b, 0x0f},                                          
-	 {0x320c, 0x00},                                          
-	 {0x320d, 0x04},                                          
-	 {0x320e, 0x5c},                                          
-	 {0x320f, 0x00},                                          
-	 {0x3210, 0x07},                                          
-	 {0x3211, 0x68},                                          
-	 {0x3212, 0x0f},                                          
-	 {0x3213, 0xc2},                                          
-	 {0x3214, 0x82},                                          
-	 {0x3215, 0x00},                                          
-	 {0x3216, 0x29},                                          
-	 {0x3217, 0x3e},                                          
-	 {0x3218, 0x0f},                                          
-	 {0x3219, 0xd3},                                          
-	 {0x321a, 0x63},                                          
-	 {0x321b, 0x00},                                          
-	 {0x321c, 0x22},                                          
-	 {0x321d, 0x6c},                                          
-	 {0x321e, 0x0f},                                          
-	 {0x321f, 0xf8},                                          
-	 {0x3220, 0xce},                                          
-	 {0x3221, 0x0f},                                          
-	 {0x3222, 0xed},                                          
-	 {0x3223, 0x30},                                          
-	 {0x3224, 0x00},                                          
-	 {0x3225, 0x37},                                          
-	 {0x3226, 0x87},                                          
-	 {0x3227, 0x0f},                                          
-	 {0x3228, 0xc2},                                          
-	 {0x3229, 0x87},                                          
-	 {0x322a, 0x00},                                          
-	 {0x322b, 0x2a},                                          
-	 {0x322c, 0xc6},                                          
-	 {0x322d, 0x0f},                                          
-	 {0x322e, 0xf3},                                          
-	 {0x322f, 0xd9},                                          
-	 {0x3230, 0x0f},                                          
-	 {0x3231, 0xea},                                          
-	 {0x3232, 0x1a},                                          
-	 {0x3233, 0x00},                                          
-	 {0x3234, 0x2d},                                          
-	 {0x3235, 0x9f},                                          
-	 {0x3236, 0x0f},                                          
-	 {0x3237, 0xde},                                          
-	 {0x3238, 0x7d},                                          
-	 {0x3239, 0x00},                                          
-	 {0x323a, 0x37},                                          
-	 {0x323b, 0x1e},                                          
-	 {0x323c, 0x0f},                                          
-	 {0x323d, 0xed},                                          
-	 {0x323e, 0x9c},                                          
-	 {0x323f, 0x0f},                                          
-	 {0x3240, 0xf6},                                          
-	 {0x3241, 0xfd},                                          
-	 {0x3242, 0x00},                                          
-	 {0x3243, 0x15},                                          
-	 {0x3244, 0xeb},                                          
-	 {0x3245, 0x0f},                                          
-	 {0x3246, 0xd3},                                          
-	 {0x3247, 0xca},                                          
-	 {0x3248, 0x00},                                          
-	 {0x3249, 0x08},                                          
-	 {0x324a, 0xe6},                                          
-	 {0x324b, 0x0f},                                          
-	 {0x324c, 0xf4},                                          
-	 {0x324d, 0x7a},                                          
-	 {0x324e, 0x0f},                                          
-	 {0x324f, 0xed},                                          
-	 {0x3250, 0x1e},                                          
-	 {0x3251, 0x00},                                          
-	 {0x3252, 0x0d},                                          
-	 {0x3253, 0x46},                                          
-	 {0x3254, 0x00},                                          
-	 {0x3255, 0x0c},                                          
-	 {0x3256, 0x3e},                                          
-	 {0x3257, 0x00},                                          
-	 {0x3258, 0x09},                                          
-	 {0x3259, 0xcf},                                          
-	 {0x325a, 0x00},                                          
-	 {0x325b, 0x09},                                          
-	 {0x325c, 0xb5},                                          
-	 {0x325d, 0x0f},                                          
-	 {0x325e, 0xec},                                          
-	 {0x325f, 0x47},                                          
-	 {0x3260, 0x00},                                          
-	 {0x3261, 0x1d},                                          
-	 {0x3262, 0xd8},                                          
-	 {0x3263, 0x0f},                                          
-	 {0x3264, 0xf7},                                          
-	 {0x3265, 0x11},                                          
-	 {0x3266, 0x0f},                                          
-	 {0x3267, 0xea},                                          
-	 {0x3268, 0x3d},                                          
-	 {0x3269, 0x00},                                          
-	 {0x326a, 0x09},                                          
-	 {0x326b, 0xcc},                                          
-	 {0x326c, 0x00},                                          
-	 {0x326d, 0x9b},                                          
-	 {0x326e, 0x73},                                          
-	 {0x326f, 0x0f},                                          
-	 {0x3270, 0xd4},                                          
-	 {0x3271, 0x9e},                                          
-	 {0x3272, 0x00},                                          
-	 {0x3273, 0x1a},                                          
-	 {0x3274, 0x87},                                          
-	 {0x3275, 0x0f},                                          
-	 {0x3276, 0xfd},                                          
-	 {0x3277, 0xeb},                                          
-	 {0x3278, 0x0f},                                          
-	 {0x3279, 0xf5},                                          
-	 {0x327a, 0xb4},                                          
-	 {0x327b, 0x00},                                          
-	 {0x327c, 0x0d},                                          
-	 {0x327d, 0x8c},                                          
-	 {0x327e, 0x0f},                                          
-	 {0x327f, 0xc9},                                          
-	 {0x3280, 0x4d},                                          
-	 {0x3281, 0x00},                                          
-	 {0x3282, 0x1d},                                          
-	 {0x3283, 0x2d},                                          
-	 {0x3284, 0x0f},                                          
-	 {0x3285, 0xea},                                          
-	 {0x3286, 0x5b},                                          
-	 {0x3287, 0x00},                                          
-	 {0x3288, 0x04},                                          
-	 {0x3289, 0x76},                                          
-	 {0x328a, 0x00},                                          
-	 {0x328b, 0x10},                                          
-	 {0x328c, 0x2d},                                          
-	 {0x328d, 0x0f},                                          
-	 {0x328e, 0xe6},                                          
-	 {0x328f, 0xde},                                          
-	 {0x3290, 0x00},                                          
-	 {0x3291, 0x26},                                          
-	 {0x3292, 0x85},                                          
-	 {0x3293, 0x0f},                                          
-	 {0x3294, 0xcf},                                          
-	 {0x3295, 0x12},                                          
-	 {0x3296, 0x00},                                          
-	 {0x3297, 0x14},                                          
-	 {0x3298, 0x0f},                                          
-	 {0x3299, 0x00},                                          
-	 {0x329a, 0x0b},                                          
-	 {0x329b, 0x36},                                          
-	 {0x329c, 0x0f},                                          
-	 {0x329d, 0xe4},                                          
-	 {0x329e, 0xa4},                                          
-	 {0x329f, 0x00},                                          
-	 {0x32a0, 0x21},                                          
-	 {0x32a1, 0x1f},                                          
-	 {0x32a2, 0x0f},                                          
-	 {0x32a3, 0xf3},                                          
-	 {0x32a4, 0x99},                                          
-	 {0x32a5, 0x00},                                          
-	 {0x32a6, 0x30},                                          
-	 {0x32a7, 0x8f},                                          
-	 {0x32a8, 0x0f},                                          
-	 {0x32a9, 0xf9},                                          
-	 {0x32aa, 0x35},                                          
-	 {0x32ab, 0x0f},                                          
-	 {0x32ac, 0xee},                                          
-	 {0x32ad, 0x6e},                                          
-	 {0x32ae, 0x00},                                          
-	 {0x32af, 0x09},                                          
-	 {0x32b0, 0x19},                                          
-	 {0x32b1, 0x0f},                                          
-	 {0x32b2, 0xf0},                                          
-	 {0x32b3, 0x57},                                          
-	 {0x32b4, 0x00},                                          
-	 {0x32b5, 0x01},                                          
-	 {0x32b6, 0xcc},                                          
-	 {0x32b7, 0x0f},                                          
-	 {0x32b8, 0xf1},                                          
-	 {0x32b9, 0x0b},                                          
-	 {0x32ba, 0x0f},                                          
-	 {0x32bb, 0xee},                                          
-	 {0x32bc, 0x99},                                          
-	 {0x32bd, 0x00},                                          
-	 {0x32be, 0x11},                                          
-	 {0x32bf, 0x3d},                                          
-	 {0x32c0, 0x00},                                          
-	 {0x32c1, 0x10},                                          
-	 {0x32c2, 0x64},                                          
-	 {0x32c3, 0x0f},                                          
-	 {0x32c4, 0xf6},                                          
-	 {0x32c5, 0xab},                                          
-	 {0x32c6, 0x00},                                          
-	 {0x32c7, 0x03},                                          
-	 {0x32c8, 0x19},                                          
-	 {0x32c9, 0x0f},                                          
-	 {0x32ca, 0xf3},                                          
-	 {0x32cb, 0xc9},                                          
-	 {0x32cc, 0x00},                                          
-	 {0x32cd, 0x17},                                          
-	 {0x32ce, 0xb3},                                          
-	 {0x32cf, 0x0f},                                          
-	 {0x32d0, 0xf2},                                          
-	 {0x32d1, 0x3d},                                          
-	 {0x32d2, 0x0f},                                          
-	 {0x32d3, 0xf4},                                          
-	 {0x32d4, 0x7e},                                          
-	 {0x32d5, 0x00},                                          
-	 {0x32d6, 0x09},                                          
-	 {0x32d7, 0x46},                                          
-	 {0x32d8, 0x00},                                          
-	 {0x32d9, 0x7c},                                          
-	 {0x32da, 0x79},                                          
-	 {0x32db, 0x0f},                                          
-	 {0x32dc, 0xde},                                          
-	 {0x32dd, 0x19},                                          
-	 {0x32de, 0x00},                                          
-	 {0x32df, 0x19},                                          
-	 {0x32e0, 0xe8},                                          
-	 {0x32e1, 0x0f},                                          
-	 {0x32e2, 0xf3},                                          
-	 {0x32e3, 0x41},                                          
-	 {0x32e4, 0x00},                                          
-	 {0x32e5, 0x03},                                          
-	 {0x32e6, 0x4c},                                          
-	 {0x32e7, 0x00},                                          
-	 {0x32e8, 0x05},                                          
-	 {0x32e9, 0x73},                                          
-	 {0x32ea, 0x0f},                                          
-	 {0x32eb, 0xd6},                                          
-	 {0x32ec, 0xa5},                                          
-	 {0x32ed, 0x00},                                          
-	 {0x32ee, 0x1f},                                          
-	 {0x32ef, 0x81},                                          
-	 {0x32f0, 0x0f},                                          
-	 {0x32f1, 0xdc},                                          
-	 {0x32f2, 0xe6},                                          
-	 {0x32f3, 0x00},                                          
-	 {0x32f4, 0x18},                                          
-	 {0x32f5, 0x65},                                          
-	 {0x32f6, 0x00},                                          
-	 {0x32f7, 0x00},                                          
-	 {0x32f8, 0x11},                                          
-	 {0x32f9, 0x0f},                                          
-	 {0x32fa, 0xed},                                          
-	 {0x32fb, 0x65},                                          
-	 {0x32fc, 0x00},                                          
-	 {0x32fd, 0x23},                                          
-	 {0x32fe, 0x12},                                          
-	 {0x32ff, 0x0f},                                          
-	 {0x3300, 0xcf},                                          
-	 {0x3301, 0x28},                                          
-	 {0x3302, 0x00},                                          
-	 {0x3303, 0x2b},                                          
-	 {0x3304, 0xda},                                          
-	 {0x3305, 0x0f},                                          
-	 {0x3306, 0xef},                                          
-	 {0x3307, 0xae},                                          
-	 {0x3308, 0x0f},                                          
-	 {0x3309, 0xeb},                                          
-	 {0x330a, 0x13},                                          
-	 {0x330b, 0x00},                                          
-	 {0x330c, 0x27},                                          
-	 {0x330d, 0xb8},                                          
-	 {0x330e, 0x0f},                                          
-	 {0x330f, 0xec},                                          
-	 {0x3310, 0x69},                                          
-	 {0x3311, 0x00},                                          
-	 {0x3312, 0x2f},                                          
-	 {0x3313, 0x5f},                                          
-	 {0x3314, 0x0f},                                          
-	 {0x3315, 0xdf},                                          
-	 {0x3316, 0x4f},                                          
-	 {0x3317, 0x00},                                          
-	 {0x3318, 0x05},                                          
-	 {0x3319, 0x70},                                          
-	 {0x331a, 0x00},                                          
-	 {0x331b, 0x0f},                                          
-	 {0x331c, 0xd2},                                          
-	 {0x331d, 0x0f},                                          
-	 {0x331e, 0xe1},                                          
-	 {0x331f, 0xd8},                                          
-	 {0x3320, 0x00},                                          
-	 {0x3321, 0x09},                                          
-	 {0x3322, 0xcf},                                          
-	 {0x3323, 0x0f},                                          
-	 {0x3324, 0xf2},                                          
-	 {0x3325, 0x6e},                                          
-	 {0x3326, 0x0f},                                          
-	 {0x3327, 0xf6},                                          
-	 {0x3328, 0xb4},                                          
-	 {0x3329, 0x00},                                          
-	 {0x332a, 0x0d},                                          
-	 {0x332b, 0x87},                                          
-	 {0x332c, 0x00},                                          
-	 {0x332d, 0x08},                                          
-	 {0x332e, 0x1e},                                          
-	 {0x332f, 0x0f},                                          
-	 {0x3330, 0xfa},                                          
-	 {0x3331, 0x6e},                                          
-	 {0x3332, 0x0f},                                          
-	 {0x3333, 0xff},                                          
-	 {0x3334, 0xaa},                                          
-	 {0x3335, 0x0f},                                          
-	 {0x3336, 0xf2},                                          
-	 {0x3337, 0xc0},                                          
-	 {0x3338, 0x00},                                          
-	 {0x3339, 0x1d},                                          
-	 {0x333a, 0x18},                                          
-	 {0x333b, 0x0f},                                          
-	 {0x333c, 0xef},                                          
-	 {0x333d, 0xed},                                          
-	 {0x333e, 0x0f},                                          
-	 {0x333f, 0xec},                                          
-	 {0x3340, 0xf6},                                          
-	 {0x3341, 0x00},                                          
-	 {0x3342, 0x16},                                          
-	 {0x3343, 0x8e},                                          
-	 {0x3344, 0x00},                                          
-	 {0x3345, 0x9c},                                          
-	 {0x3346, 0x52},                                          
-	 {0x3347, 0x0f},                                          
-	 {0x3348, 0xcf},                                          
-	 {0x3349, 0xb9},                                          
-	 {0x334a, 0x00},                                          
-	 {0x334b, 0x29},                                          
-	 {0x334c, 0xe9},                                          
-	 {0x334d, 0x0f},                                          
-	 {0x334e, 0xe2},                                          
-	 {0x334f, 0x83},                                          
-	 {0x3350, 0x00},                                          
-	 {0x3351, 0x11},                                          
-	 {0x3352, 0xcc},                                          
-	 {0x3353, 0x0f},                                          
-	 {0x3354, 0xff},                                          
-	 {0x3355, 0xf4},                                          
-	 {0x3356, 0x0f},                                          
-	 {0x3357, 0xc1},                                          
-	 {0x3358, 0xa4},                                          
-	 {0x3359, 0x00},                                          
-	 {0x335a, 0x2f},                                          
-	 {0x335b, 0xce},                                          
-	 {0x335c, 0x0f},                                          
-	 {0x335d, 0xc5},                                          
-	 {0x335e, 0xbb},                                          
-	 {0x335f, 0x00},                                          
-	 {0x3360, 0x35},                                          
-	 {0x3361, 0x2a},                                          
-	 {0x3362, 0x0f},                                          
-	 {0x3363, 0xe6},                                          
-	 {0x3364, 0x2a},                                          
-	 {0x3365, 0x0f},                                          
-	 {0x3366, 0xf7},                                          
-	 {0x3367, 0x44},                                          
-	 {0x3368, 0x00},                                          
-	 {0x3369, 0x31},                                          
-	 {0x336a, 0xfe},                                          
-	 {0x336b, 0x0f},                                          
-	 {0x336c, 0xb6},                                          
-	 {0x336d, 0x84},                                          
-	 {0x336e, 0x00},                                          
-	 {0x336f, 0x3c},                                          
-	 {0x3370, 0x71},                                          
-	 {0x3371, 0x0f},                                          
-	 {0x3372, 0xe5},                                          
-	 {0x3373, 0xfe},                                          
-	 {0x3374, 0x0f},                                          
-	 {0x3375, 0xf2},                                          
-	 {0x3376, 0x87},                                          
-	 {0x3377, 0x00},                                          
-	 {0x3378, 0x29},                                          
-	 {0x3379, 0x2b},                                          
-	 {0x337a, 0x0f},                                          
-	 {0x337b, 0xe5},                                          
-	 {0x337c, 0x3f},                                          
-	 {0x337d, 0x00},                                          
-	 {0x337e, 0x45},                                          
-	 {0x337f, 0xc6},                                          
-	 {0x3380, 0x0f},                                          
-	 {0x3381, 0xdf},                                          
-	 {0x3382, 0xe6},                                          
-	 {0x3383, 0x0f},                                          
-	 {0x3384, 0xfb},                                          
-	 {0x3385, 0x0f},                                          
-	 {0x3386, 0x00},                                          
-	 {0x3387, 0x0f},                                          
-	 {0x3388, 0xf4},                                          
-	 {0x3389, 0x0f},                                          
-	 {0x338a, 0xdf},                                          
-	 {0x338b, 0x72},                                          
-	 {0x338c, 0x00},                                          
-	 {0x338d, 0x0e},                                          
-	 {0x338e, 0xaf},                                          
-	 {0x338f, 0x0f},                                          
-	 {0x3390, 0xed},                                          
-	 {0x3391, 0x7a},                                          
-	 {0x3392, 0x0f},                                          
-	 {0x3393, 0xe5},                                          
-	 {0x3394, 0xab},                                          
-	 {0x3395, 0x00},                                          
-	 {0x3396, 0x18},                                          
-	 {0x3397, 0x43},                                          
-	 {0x3398, 0x00},                                          
-	 {0x3399, 0x1b},                                          
-	 {0x339a, 0x41},                                          
-	 {0x339b, 0x0f},                                          
-	 {0x339c, 0xea},                                          
-	 {0x339d, 0x84},                                          
-	 {0x339e, 0x0f},                                          
-	 {0x339f, 0xfd},                                          
-	 {0x33a0, 0xdb},                                          
-	 {0x33a1, 0x0f},                                          
-	 {0x33a2, 0xe9},                                          
-	 {0x33a3, 0xbd},                                          
-	 {0x33a4, 0x00},                                          
-	 {0x33a5, 0x30},                                          
-	 {0x33a6, 0x77},                                          
-	 {0x33a7, 0x0f},                                          
-	 {0x33a8, 0xe9},                                          
-	 {0x33a9, 0x93},                                          
-	 {0x33aa, 0x0f},                                          
-	 {0x33ab, 0xd7},                                          
-	 {0x33ac, 0xde},                                          
-	 {0x33ad, 0x00},                                          
-	 {0x33ae, 0x2a},                                          
-	 {0x33af, 0x14},                                          
+	 {0x3200, 0x00}, /* 100304 Modify LC setting DNP light source t75-r70 to improve reddish issue*/
+	 {0x3201, 0x99},
+	 {0x3202, 0xc1},
+	 {0x3203, 0x0f},
+	 {0x3204, 0xd0},
+	 {0x3205, 0x1b},
+	 {0x3206, 0x00},
+	 {0x3207, 0x24},
+	 {0x3208, 0x8d},
+	 {0x3209, 0x0f},
+	 {0x320a, 0xee},
+	 {0x320b, 0x0f},
+	 {0x320c, 0x00},
+	 {0x320d, 0x04},
+	 {0x320e, 0x5c},
+	 {0x320f, 0x00},
+	 {0x3210, 0x07},
+	 {0x3211, 0x68},
+	 {0x3212, 0x0f},
+	 {0x3213, 0xc2},
+	 {0x3214, 0x82},
+	 {0x3215, 0x00},
+	 {0x3216, 0x29},
+	 {0x3217, 0x3e},
+	 {0x3218, 0x0f},
+	 {0x3219, 0xd3},
+	 {0x321a, 0x63},
+	 {0x321b, 0x00},
+	 {0x321c, 0x22},
+	 {0x321d, 0x6c},
+	 {0x321e, 0x0f},
+	 {0x321f, 0xf8},
+	 {0x3220, 0xce},
+	 {0x3221, 0x0f},
+	 {0x3222, 0xed},
+	 {0x3223, 0x30},
+	 {0x3224, 0x00},
+	 {0x3225, 0x37},
+	 {0x3226, 0x87},
+	 {0x3227, 0x0f},
+	 {0x3228, 0xc2},
+	 {0x3229, 0x87},
+	 {0x322a, 0x00},
+	 {0x322b, 0x2a},
+	 {0x322c, 0xc6},
+	 {0x322d, 0x0f},
+	 {0x322e, 0xf3},
+	 {0x322f, 0xd9},
+	 {0x3230, 0x0f},
+	 {0x3231, 0xea},
+	 {0x3232, 0x1a},
+	 {0x3233, 0x00},
+	 {0x3234, 0x2d},
+	 {0x3235, 0x9f},
+	 {0x3236, 0x0f},
+	 {0x3237, 0xde},
+	 {0x3238, 0x7d},
+	 {0x3239, 0x00},
+	 {0x323a, 0x37},
+	 {0x323b, 0x1e},
+	 {0x323c, 0x0f},
+	 {0x323d, 0xed},
+	 {0x323e, 0x9c},
+	 {0x323f, 0x0f},
+	 {0x3240, 0xf6},
+	 {0x3241, 0xfd},
+	 {0x3242, 0x00},
+	 {0x3243, 0x15},
+	 {0x3244, 0xeb},
+	 {0x3245, 0x0f},
+	 {0x3246, 0xd3},
+	 {0x3247, 0xca},
+	 {0x3248, 0x00},
+	 {0x3249, 0x08},
+	 {0x324a, 0xe6},
+	 {0x324b, 0x0f},
+	 {0x324c, 0xf4},
+	 {0x324d, 0x7a},
+	 {0x324e, 0x0f},
+	 {0x324f, 0xed},
+	 {0x3250, 0x1e},
+	 {0x3251, 0x00},
+	 {0x3252, 0x0d},
+	 {0x3253, 0x46},
+	 {0x3254, 0x00},
+	 {0x3255, 0x0c},
+	 {0x3256, 0x3e},
+	 {0x3257, 0x00},
+	 {0x3258, 0x09},
+	 {0x3259, 0xcf},
+	 {0x325a, 0x00},
+	 {0x325b, 0x09},
+	 {0x325c, 0xb5},
+	 {0x325d, 0x0f},
+	 {0x325e, 0xec},
+	 {0x325f, 0x47},
+	 {0x3260, 0x00},
+	 {0x3261, 0x1d},
+	 {0x3262, 0xd8},
+	 {0x3263, 0x0f},
+	 {0x3264, 0xf7},
+	 {0x3265, 0x11},
+	 {0x3266, 0x0f},
+	 {0x3267, 0xea},
+	 {0x3268, 0x3d},
+	 {0x3269, 0x00},
+	 {0x326a, 0x09},
+	 {0x326b, 0xcc},
+	 {0x326c, 0x00},
+	 {0x326d, 0x99},
+	 {0x326e, 0x45},
+	 {0x326f, 0x0f},
+	 {0x3270, 0xd3},
+	 {0x3271, 0x80},
+	 {0x3272, 0x00},
+	 {0x3273, 0x20},
+	 {0x3274, 0xf7},
+	 {0x3275, 0x0f},
+	 {0x3276, 0xef},
+	 {0x3277, 0x0d},
+	 {0x3278, 0x00},
+	 {0x3279, 0x09},
+	 {0x327a, 0x3c},
+	 {0x327b, 0x00},
+	 {0x327c, 0x01},
+	 {0x327d, 0x16},
+	 {0x327e, 0x0f},
+	 {0x327f, 0xc9},
+	 {0x3280, 0x36},
+	 {0x3281, 0x00},
+	 {0x3282, 0x21},
+	 {0x3283, 0xff},
+	 {0x3284, 0x0f},
+	 {0x3285, 0xdc},
+	 {0x3286, 0xc2},
+	 {0x3287, 0x00},
+	 {0x3288, 0x1e},
+	 {0x3289, 0xc0},
+	 {0x328a, 0x0f},
+	 {0x328b, 0xf0},
+	 {0x328c, 0xa7},
+	 {0x328d, 0x0f},
+	 {0x328e, 0xf9},
+	 {0x328f, 0x2a},
+	 {0x3290, 0x00},
+	 {0x3291, 0x29},
+	 {0x3292, 0x5c},
+	 {0x3293, 0x0f},
+	 {0x3294, 0xc9},
+	 {0x3295, 0x2a},
+	 {0x3296, 0x00},
+	 {0x3297, 0x1f},
+	 {0x3298, 0x5c},
+	 {0x3299, 0x0f},
+	 {0x329a, 0xfa},
+	 {0x329b, 0x0c},
+	 {0x329c, 0x0f},
+	 {0x329d, 0xf3},
+	 {0x329e, 0x94},
+	 {0x329f, 0x00},
+	 {0x32a0, 0x1c},
+	 {0x32a1, 0xce},
+	 {0x32a2, 0x0f},
+	 {0x32a3, 0xed},
+	 {0x32a4, 0xb7},
+	 {0x32a5, 0x00},
+	 {0x32a6, 0x34},
+	 {0x32a7, 0x51},
+	 {0x32a8, 0x0f},
+	 {0x32a9, 0xfa},
+	 {0x32aa, 0x7d},
+	 {0x32ab, 0x0f},
+	 {0x32ac, 0xe6},
+	 {0x32ad, 0xbf},
+	 {0x32ae, 0x00},
+	 {0x32af, 0x18},
+	 {0x32b0, 0xc6},
+	 {0x32b1, 0x0f},
+	 {0x32b2, 0xe0},
+	 {0x32b3, 0x72},
+	 {0x32b4, 0x00},
+	 {0x32b5, 0x08},
+	 {0x32b6, 0x23},
+	 {0x32b7, 0x0f},
+	 {0x32b8, 0xf1},
+	 {0x32b9, 0x54},
+	 {0x32ba, 0x0f},
+	 {0x32bb, 0xe1},
+	 {0x32bc, 0x84},
+	 {0x32bd, 0x00},
+	 {0x32be, 0x26},
+	 {0x32bf, 0xb1},
+	 {0x32c0, 0x0f},
+	 {0x32c1, 0xfa},
+	 {0x32c2, 0xc2},
+	 {0x32c3, 0x00},
+	 {0x32c4, 0x05},
+	 {0x32c5, 0x3d},
+	 {0x32c6, 0x0f},
+	 {0x32c7, 0xff},
+	 {0x32c8, 0xaf},
+	 {0x32c9, 0x0f},
+	 {0x32ca, 0xf1},
+	 {0x32cb, 0xe5},
+	 {0x32cc, 0x00},
+	 {0x32cd, 0x21},
+	 {0x32ce, 0xdd},
+	 {0x32cf, 0x0f},
+	 {0x32d0, 0xe8},
+	 {0x32d1, 0x6a},
+	 {0x32d2, 0x0f},
+	 {0x32d3, 0xf4},
+	 {0x32d4, 0xfb},
+	 {0x32d5, 0x00},
+	 {0x32d6, 0x0c},
+	 {0x32d7, 0x89},
+	 {0x32d8, 0x00},
+	 {0x32d9, 0x7c},
+	 {0x32da, 0x79},
+	 {0x32db, 0x0f},
+	 {0x32dc, 0xde},
+	 {0x32dd, 0x19},
+	 {0x32de, 0x00},
+	 {0x32df, 0x19},
+	 {0x32e0, 0xe8},
+	 {0x32e1, 0x0f},
+	 {0x32e2, 0xf3},
+	 {0x32e3, 0x41},
+	 {0x32e4, 0x00},
+	 {0x32e5, 0x03},
+	 {0x32e6, 0x4c},
+	 {0x32e7, 0x00},
+	 {0x32e8, 0x05},
+	 {0x32e9, 0x73},
+	 {0x32ea, 0x0f},
+	 {0x32eb, 0xd6},
+	 {0x32ec, 0xa5},
+	 {0x32ed, 0x00},
+	 {0x32ee, 0x1f},
+	 {0x32ef, 0x81},
+	 {0x32f0, 0x0f},
+	 {0x32f1, 0xdc},
+	 {0x32f2, 0xe6},
+	 {0x32f3, 0x00},
+	 {0x32f4, 0x18},
+	 {0x32f5, 0x65},
+	 {0x32f6, 0x00},
+	 {0x32f7, 0x00},
+	 {0x32f8, 0x11},
+	 {0x32f9, 0x0f},
+	 {0x32fa, 0xed},
+	 {0x32fb, 0x65},
+	 {0x32fc, 0x00},
+	 {0x32fd, 0x23},
+	 {0x32fe, 0x12},
+	 {0x32ff, 0x0f},
+	 {0x3300, 0xcf},
+	 {0x3301, 0x28},
+	 {0x3302, 0x00},
+	 {0x3303, 0x2b},
+	 {0x3304, 0xda},
+	 {0x3305, 0x0f},
+	 {0x3306, 0xef},
+	 {0x3307, 0xae},
+	 {0x3308, 0x0f},
+	 {0x3309, 0xeb},
+	 {0x330a, 0x13},
+	 {0x330b, 0x00},
+	 {0x330c, 0x27},
+	 {0x330d, 0xb8},
+	 {0x330e, 0x0f},
+	 {0x330f, 0xec},
+	 {0x3310, 0x69},
+	 {0x3311, 0x00},
+	 {0x3312, 0x2f},
+	 {0x3313, 0x5f},
+	 {0x3314, 0x0f},
+	 {0x3315, 0xdf},
+	 {0x3316, 0x4f},
+	 {0x3317, 0x00},
+	 {0x3318, 0x05},
+	 {0x3319, 0x70},
+	 {0x331a, 0x00},
+	 {0x331b, 0x0f},
+	 {0x331c, 0xd2},
+	 {0x331d, 0x0f},
+	 {0x331e, 0xe1},
+	 {0x331f, 0xd8},
+	 {0x3320, 0x00},
+	 {0x3321, 0x09},
+	 {0x3322, 0xcf},
+	 {0x3323, 0x0f},
+	 {0x3324, 0xf2},
+	 {0x3325, 0x6e},
+	 {0x3326, 0x0f},
+	 {0x3327, 0xf6},
+	 {0x3328, 0xb4},
+	 {0x3329, 0x00},
+	 {0x332a, 0x0d},
+	 {0x332b, 0x87},
+	 {0x332c, 0x00},
+	 {0x332d, 0x08},
+	 {0x332e, 0x1e},
+	 {0x332f, 0x0f},
+	 {0x3330, 0xfa},
+	 {0x3331, 0x6e},
+	 {0x3332, 0x0f},
+	 {0x3333, 0xff},
+	 {0x3334, 0xaa},
+	 {0x3335, 0x0f},
+	 {0x3336, 0xf2},
+	 {0x3337, 0xc0},
+	 {0x3338, 0x00},
+	 {0x3339, 0x1d},
+	 {0x333a, 0x18},
+	 {0x333b, 0x0f},
+	 {0x333c, 0xef},
+	 {0x333d, 0xed},
+	 {0x333e, 0x0f},
+	 {0x333f, 0xec},
+	 {0x3340, 0xf6},
+	 {0x3341, 0x00},
+	 {0x3342, 0x16},
+	 {0x3343, 0x8e},
+	 {0x3344, 0x00},
+	 {0x3345, 0x9c},
+	 {0x3346, 0x52},
+	 {0x3347, 0x0f},
+	 {0x3348, 0xcf},
+	 {0x3349, 0xb9},
+	 {0x334a, 0x00},
+	 {0x334b, 0x29},
+	 {0x334c, 0xe9},
+	 {0x334d, 0x0f},
+	 {0x334e, 0xe2},
+	 {0x334f, 0x83},
+	 {0x3350, 0x00},
+	 {0x3351, 0x11},
+	 {0x3352, 0xcc},
+	 {0x3353, 0x0f},
+	 {0x3354, 0xff},
+	 {0x3355, 0xf4},
+	 {0x3356, 0x0f},
+	 {0x3357, 0xc1},
+	 {0x3358, 0xa4},
+	 {0x3359, 0x00},
+	 {0x335a, 0x2f},
+	 {0x335b, 0xce},
+	 {0x335c, 0x0f},
+	 {0x335d, 0xc5},
+	 {0x335e, 0xbb},
+	 {0x335f, 0x00},
+	 {0x3360, 0x35},
+	 {0x3361, 0x2a},
+	 {0x3362, 0x0f},
+	 {0x3363, 0xe6},
+	 {0x3364, 0x2a},
+	 {0x3365, 0x0f},
+	 {0x3366, 0xf7},
+	 {0x3367, 0x44},
+	 {0x3368, 0x00},
+	 {0x3369, 0x31},
+	 {0x336a, 0xfe},
+	 {0x336b, 0x0f},
+	 {0x336c, 0xb6},
+	 {0x336d, 0x84},
+	 {0x336e, 0x00},
+	 {0x336f, 0x3c},
+	 {0x3370, 0x71},
+	 {0x3371, 0x0f},
+	 {0x3372, 0xe5},
+	 {0x3373, 0xfe},
+	 {0x3374, 0x0f},
+	 {0x3375, 0xf2},
+	 {0x3376, 0x87},
+	 {0x3377, 0x00},
+	 {0x3378, 0x29},
+	 {0x3379, 0x2b},
+	 {0x337a, 0x0f},
+	 {0x337b, 0xe5},
+	 {0x337c, 0x3f},
+	 {0x337d, 0x00},
+	 {0x337e, 0x45},
+	 {0x337f, 0xc6},
+	 {0x3380, 0x0f},
+	 {0x3381, 0xdf},
+	 {0x3382, 0xe6},
+	 {0x3383, 0x0f},
+	 {0x3384, 0xfb},
+	 {0x3385, 0x0f},
+	 {0x3386, 0x00},
+	 {0x3387, 0x0f},
+	 {0x3388, 0xf4},
+	 {0x3389, 0x0f},
+	 {0x338a, 0xdf},
+	 {0x338b, 0x72},
+	 {0x338c, 0x00},
+	 {0x338d, 0x0e},
+	 {0x338e, 0xaf},
+	 {0x338f, 0x0f},
+	 {0x3390, 0xed},
+	 {0x3391, 0x7a},
+	 {0x3392, 0x0f},
+	 {0x3393, 0xe5},
+	 {0x3394, 0xab},
+	 {0x3395, 0x00},
+	 {0x3396, 0x18},
+	 {0x3397, 0x43},
+	 {0x3398, 0x00},
+	 {0x3399, 0x1b},
+	 {0x339a, 0x41},
+	 {0x339b, 0x0f},
+	 {0x339c, 0xea},
+	 {0x339d, 0x84},
+	 {0x339e, 0x0f},
+	 {0x339f, 0xfd},
+	 {0x33a0, 0xdb},
+	 {0x33a1, 0x0f},
+	 {0x33a2, 0xe9},
+	 {0x33a3, 0xbd},
+	 {0x33a4, 0x00},
+	 {0x33a5, 0x30},
+	 {0x33a6, 0x77},
+	 {0x33a7, 0x0f},
+	 {0x33a8, 0xe9},
+	 {0x33a9, 0x93},
+	 {0x33aa, 0x0f},
+	 {0x33ab, 0xd7},
+	 {0x33ac, 0xde},
+	 {0x33ad, 0x00},
+	 {0x33ae, 0x2a},
+	 {0x33af, 0x14},
 	 {0x309D, 0x62},
 	 {0x309d, 0x22}, /* shading enable */
 	 /*LC setting End */
@@ -1949,6 +1945,7 @@ static struct i2c_driver s5k3e2fx_i2c_driver = {
 	},
 };
 
+#if 0
 static int s5k3e2fx_test(enum msm_s_test_mode mo)
 {
 	int rc = 0;
@@ -1961,6 +1958,7 @@ static int s5k3e2fx_test(enum msm_s_test_mode mo)
 
 	return rc;
 }
+#endif
 
 static int s5k3e2fx_setting_INIT_EVT4(void)
 {
@@ -2269,8 +2267,10 @@ static int s5k3e2fc_setting_PREIODIC_EVT5(enum msm_s_setting rt)
 	int rc = 0;
 	uint16_t num_lperf;
 	struct s5k3e2fx_i2c_reg_conf tbl_1[] = {
-		{S5K3E2FX_REG_MODE_SELECT,
-			S5K3E2FX_MODE_SELECT_SW_STANDBY},
+					/* skip doing streaming off
+					{S5K3E2FX_REG_MODE_SELECT,
+					S5K3E2FX_MODE_SELECT_SW_STANDBY},
+					 */
 		{REG_X_OUTPUT_SIZE_MSB,
 			s5k3e2fx_reg_pat[rt].x_output_size_msb},
 		{REG_X_OUTPUT_SIZE_LSB,
@@ -2375,27 +2375,6 @@ static int s5k3e2fc_setting_PREIODIC_EVT5(enum msm_s_setting rt)
 			{0x3063, 0x16},
 		}
 	};
-
-				/* Most registers are directly applied at next frame after
-				   writing except shutter and analog gain. Shutter and gain are
-				   applied at 2nd or 1st frame later depending on register
-				   writing time. When the camera is switched from preview to
-				   snapshot, the first frame may have wrong shutter/gain and
-				   should be discarded. The register REG_MASK_CORRUPTED_FRAMES
-				   can discard the frame that has wrong shutter/gain. But in
-				   preview mode, the frames should not be dropped. Otherwise
-				   the preview will not be smooth. */
-				if (rt == S_RES_PREVIEW) {
-					/* Frames will be not discarded after exposure and gain are
-					   written. */
-					s5k3e2fx_i2c_write_b(s5k3e2fx_client->addr,
-						REG_MASK_CORRUPTED_FRAMES, NO_MASK);
-				} else {
-					/* Solve greenish in lowlight. Prevent corrupted frame */
-					s5k3e2fx_i2c_write_b(s5k3e2fx_client->addr,
-						REG_MASK_CORRUPTED_FRAMES, MASK);
-				}
-
 /* solve greenish: hold for both */
 				rc = s5k3e2fx_i2c_write_b(
 					s5k3e2fx_client->addr,
@@ -2404,17 +2383,14 @@ static int s5k3e2fc_setting_PREIODIC_EVT5(enum msm_s_setting rt)
 				if (rc < 0)
 					return rc;
 
-				CDBG("Binning_enable = 0x %2x"
-				     "[s5k3e2fx.c s5k3e2fx_setting]\r\n",
-				     s5k3e2fx_reg_pat[rt].binning_enable);
-
-				rc = s5k3e2fx_i2c_write_table(&tbl_1[0],
-							ARRAY_SIZE
-							(tbl_1));
-				if (rc < 0) {
-					pr_err("UPDATE_PERIODIC, tb1_1 failed");
-					return rc;
-				}
+	CDBG("Binning_enable = 0x %2x"
+			"[s5k3e2fx.c s5k3e2fx_setting]\r\n",
+			s5k3e2fx_reg_pat[rt].binning_enable);
+	rc = s5k3e2fx_i2c_write_table(&tbl_1[0], ARRAY_SIZE(tbl_1));
+	if (rc < 0) {
+		pr_err("UPDATE_PERIODIC, tb1_1 failed");
+		return rc;
+	}
 
 	/* only for evt5 */
 	if (g_usModuleVersion == 1) {
@@ -2439,27 +2415,25 @@ static int s5k3e2fc_setting_PREIODIC_EVT5(enum msm_s_setting rt)
 		return rc;
 	}
 
-	/* Fixes CAMIF errors */
-	if (rt == S_RES_CAPTURE)
-		msleep(25);
-
-	if (s5k3e2fx_ctrl->sensormode != SENSOR_SNAPSHOT_MODE) { /* 100202 Add to change the snapshot stream on after set AEC setting */
-		rc = s5k3e2fx_i2c_write_b(s5k3e2fx_client->addr,
-				S5K3E2FX_REG_MODE_SELECT,
-				S5K3E2FX_MODE_SELECT_STREAM);
+/* solve greenish: only release for preview */
+	if (s5k3e2fx_ctrl->sensormode == SENSOR_PREVIEW_MODE)
+	{
+		rc = s5k3e2fx_i2c_write_b(
+			s5k3e2fx_client->addr,
+			REG_GROUPED_PARAMETER_HOLD,
+			GROUPED_PARAMETER_UPDATE);
 		if (rc < 0)
 			return rc;
 	}
 
-	mdelay(5);
-	/*TODO:Do we really need this*/
-/*  100202 Remove test mode
-	rc = s5k3e2fx_test(s5k3e2fx_ctrl->set_test);
+
+	rc = s5k3e2fx_i2c_write_b(s5k3e2fx_client->addr,
+			S5K3E2FX_REG_MODE_SELECT,
+			S5K3E2FX_MODE_SELECT_STREAM);
 	if (rc < 0)
 		return rc;
-*/
 
-	return rc;
+	return 0;
 }
 
 
@@ -2785,11 +2759,12 @@ static int s5k3e2fx_probe_init_lens_correction(
 			&lc_setting_evt4[0],
 			ARRAY_SIZE(lc_setting_evt4));
 	else
-		/* Solve EVT5 greenish in lowlight, prevent corrupted frame*/
-		s5k3e2fx_i2c_write_b(s5k3e2fx_client->addr, 0x105,0x1);
 		s5k3e2fx_i2c_write_table(
 			&lc_setting_evt5[0],
 			ARRAY_SIZE(lc_setting_evt5));
+
+    /* Solve EVT5 greenish in lowlight, prevent corrupted frame*/
+    s5k3e2fx_i2c_write_b(s5k3e2fx_client->addr, 0x0105,0x1);
 
 	/*20090811  separates the EVT4/EVT5 sensor init and LC setting end */
 	s5k3e2fx_i2c_write_b(s5k3e2fx_client->addr,
@@ -2904,8 +2879,8 @@ static int s5k3e2fx_write_exp_gain(uint16_t gain, uint32_t line)
 
 	CDBG("Line:%d s5k3e2fx_write_exp_gain \n", __LINE__);
 //printk("Steven Enter write_exp_gain User Space Gain and Line:gain = %4d, line = %6d \n", gain, line);
-	if ((gain == 0) || (line == 0))  /* 100202 Add this for gain == line == 0 special condition */
-		return rc;
+//	if ((gain == 0) || (line == 0))  /* 100223 Mask this for Bright Flash In Beginning */
+//		return rc;
 
 	if (s5k3e2fx_ctrl->sensormode == SENSOR_PREVIEW_MODE) {
 
@@ -2938,13 +2913,14 @@ static int s5k3e2fx_write_exp_gain(uint16_t gain, uint32_t line)
 	else
 		ll_ratio = 0x400;
 
-/* AEC_FLASHING */
+/* solve greenish: only release for preview */
 	if (s5k3e2fx_ctrl->sensormode == SENSOR_PREVIEW_MODE) {
 		rc = s5k3e2fx_i2c_write_b(s5k3e2fx_client->addr,
-				  REG_GROUPED_PARAMETER_HOLD,
-				  GROUPED_PARAMETER_HOLD);
+					  REG_GROUPED_PARAMETER_HOLD,
+					  GROUPED_PARAMETER_HOLD);
 		if (rc < 0) {
-			pr_err("s5k3e2fx_i2c_write_b failed on line %d\n", __LINE__);
+			pr_err("s5k3e2fx_i2c_write_b failed on line %d\n",
+				__LINE__);
 			return rc;
 		}
 	}
@@ -2959,7 +2935,7 @@ static int s5k3e2fx_write_exp_gain(uint16_t gain, uint32_t line)
 	rc = s5k3e2fx_i2c_write_table(&tbl[0], ARRAY_SIZE(tbl));
 	if (rc < 0)
 		goto write_gain_done;
-#if 1 /* 100202 To use LINE_LENGTH_PCK to improve snapshot will green a little issue */ /* AEC_FLASHING */
+#if 1 /* Solve EVT5 greenish in lowlight*/
 	ll_pck = ll_pck * ll_ratio;
 	ll_pck_msb = ((ll_pck / 0x400) & 0xFF00) >> 8;
 	ll_pck_lsb = (ll_pck / 0x400) & 0x00FF;
@@ -2972,16 +2948,7 @@ static int s5k3e2fx_write_exp_gain(uint16_t gain, uint32_t line)
 	if (rc < 0)
 		goto write_gain_done;
 
-	line = line / ll_ratio;
-	intg_t_msb = (line & 0xFF00) >> 8;
-	intg_t_lsb = (line & 0x00FF);
-	tbl[0].waddr = REG_COARSE_INTEGRATION_TIME;
-	tbl[0].bdata = intg_t_msb;
-	tbl[1].waddr = REG_COARSE_INTEGRATION_TIME_LSB;
-	tbl[1].bdata = intg_t_lsb;
-	rc = s5k3e2fx_i2c_write_table(&tbl[0], ARRAY_SIZE(tbl));
-//printk("Steven Exit write_exp_gain :ll_ratio = %4d, ANALOGUE_GAIN_CODE_GLOBAL = %4d, LINE_LENGTH_PCK = %5d, COARSE_INTEGRATION_TIME = %5d, REG_FRAME_LENGTH_LINES = %4d \n", ll_ratio, gain, ll_pck, line, fl_lines);	
-#else /* AEC_FLASHING */
+#else
 	if (line / 0x400 + offset > fl_lines)
 		ll_pck = line / 0x400 + offset;
 	else
@@ -2997,8 +2964,9 @@ static int s5k3e2fx_write_exp_gain(uint16_t gain, uint32_t line)
 	rc = s5k3e2fx_i2c_write_table(&tbl[0], ARRAY_SIZE(tbl));
 	if (rc < 0)
 		goto write_gain_done;
-
-	line = line / 0x400;
+#endif
+	line = line / ll_ratio;
+	CDBG("line %d, fl_lines %d\n", line, fl_lines);
 	intg_t_msb = (line & 0xFF00) >> 8;
 	intg_t_lsb = (line & 0x00FF);
 	tbl[0].waddr = REG_COARSE_INTEGRATION_TIME;
@@ -3006,8 +2974,8 @@ static int s5k3e2fx_write_exp_gain(uint16_t gain, uint32_t line)
 	tbl[1].waddr = REG_COARSE_INTEGRATION_TIME_LSB;
 	tbl[1].bdata = intg_t_lsb;
 	rc = s5k3e2fx_i2c_write_table(&tbl[0], ARRAY_SIZE(tbl));
-#endif  /* 100202 To use LINE_LENGTH_PCK to improve snapshot will green a little issue */
 
+/* solve greenish: release for both */
 	rc = s5k3e2fx_i2c_write_b(s5k3e2fx_client->addr,
 				  REG_GROUPED_PARAMETER_HOLD,
 				  GROUPED_PARAMETER_UPDATE);
@@ -3021,22 +2989,10 @@ write_gain_done:
 
 static int s5k3e2fx_set_pict_exp_gain(uint16_t gain, uint32_t line)
 {
-	int rc = 0;
+	pr_info("s5k3e2fx_set_pict_exp_gain gain %d line %d\n",
+		gain, line);
 
-	CDBG("Line:%d s5k3e2fx_set_pict_exp_gain \n", __LINE__);
-
-	rc = s5k3e2fx_write_exp_gain(gain, line);
-	if (rc < 0)
-		return rc;
-
-	/* 100202 Add to change the snapshot stream on after set AEC setting */
-	rc = s5k3e2fx_i2c_write_b(s5k3e2fx_client->addr,
-			S5K3E2FX_REG_MODE_SELECT,
-			S5K3E2FX_MODE_SELECT_STREAM);
-	if (rc < 0)
-		return rc;
-
-	return rc;
+	return s5k3e2fx_write_exp_gain(gain, line);
 }
 
 static int s5k3e2fx_video_config(int mode, int res)
@@ -3096,7 +3052,9 @@ static int s5k3e2fx_set_default_focus(void)
 	return rc;
 }
 
-static int s5k3e2fx_move_focus(int direction, int num_steps,int coarse_delay,int fine_delay)
+static int s5k3e2fx_move_focus(
+	int direction, int num_steps,int coarse_delay,int fine_delay,
+	int step_dir, int init_code_offset_max)
 {
 	int rc = 0;
 	int i;
@@ -3113,7 +3071,7 @@ static int s5k3e2fx_move_focus(int direction, int num_steps,int coarse_delay,int
 	int16_t fine_search_delay;
 
 	if (g_usModuleVersion == 1) { /* EVT5 */
-		step_direction_pre_define = 20;
+		step_direction_pre_define = step_dir;
 		init_code_offset_pre_define = 738;
 		/*fine search delay time is turnable*/
 		coarse_search_delay = coarse_delay;
@@ -3124,6 +3082,8 @@ static int s5k3e2fx_move_focus(int direction, int num_steps,int coarse_delay,int
 		coarse_search_delay = 6;
 		fine_search_delay = 4;
 	}
+
+pr_info("%s step_direction_pre_define %d\n", __func__, step_direction_pre_define);
 
 	if (direction == MOVE_NEAR)
 		step_direction = step_direction_pre_define;
@@ -3153,7 +3113,7 @@ static int s5k3e2fx_move_focus(int direction, int num_steps,int coarse_delay,int
 	for (i = 0; i <= 4; i++) {
 		next_pos = (int16_t) (pos_offset + s_move[i]);
 
-		if (next_pos > (init_code_offset_pre_define + init_code))
+		if (next_pos > (init_code_offset_max + init_code))
 			next_pos = init_code_offset_pre_define + init_code;
 		else if (next_pos < 0)
 			next_pos = 0;
@@ -3482,7 +3442,9 @@ static int s5k3e2fx_sensor_config(void __user *argp)
 		rc = s5k3e2fx_move_focus(cdata.cfg.focus.dir,
 					 cdata.cfg.focus.steps,
 					 cdata.cfg.focus.coarse_delay,
-					 cdata.cfg.focus.fine_delay);
+					 cdata.cfg.focus.fine_delay,
+					 cdata.cfg.focus.step_dir,
+					 cdata.cfg.focus.init_code_offset_max);
 		break;
 
 	case CFG_SET_DEFAULT_FOCUS:
