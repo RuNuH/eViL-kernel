@@ -77,7 +77,7 @@ static struct resource mahimahi_wifi_resources[] = {
 		.name		= "bcm4329_wlan_irq",
 		.start		= MSM_GPIO_TO_INT(MAHIMAHI_GPIO_WIFI_IRQ),
 		.end		= MSM_GPIO_TO_INT(MAHIMAHI_GPIO_WIFI_IRQ),
-		.flags		= IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHLEVEL | IORESOURCE_IRQ_SHAREABLE,
+		.flags		= IORESOURCE_IRQ | IORESOURCE_IRQ_LOWEDGE,
 	},
 };
 
@@ -101,7 +101,7 @@ static struct platform_device mahimahi_wifi_device = {
 extern unsigned char *get_wifi_nvs_ram(void);
 extern int wifi_calibration_size_set(void);
 
-static unsigned mahimahi_wifi_update_nvs(char *str, int add_flag)
+static unsigned mahimahi_wifi_update_nvs(char *str)
 {
 #define NVS_LEN_OFFSET		0x0C
 #define NVS_DATA_OFFSET		0x40
@@ -116,13 +116,8 @@ static unsigned mahimahi_wifi_update_nvs(char *str, int add_flag)
 	/* if the last byte in NVRAM is 0, trim it */
 	if (ptr[NVS_DATA_OFFSET + len - 1] == 0)
 		len -= 1;
-	if (add_flag) {
-		strcpy(ptr + NVS_DATA_OFFSET + len, str);
-		len += strlen(str);
-	} else {
-		if (strnstr(ptr + NVS_DATA_OFFSET, str, len))
-			len -= strlen(str);
-	}
+	strcpy(ptr + NVS_DATA_OFFSET + len, str);
+	len += strlen(str);
 	memcpy(ptr + NVS_LEN_OFFSET, &len, sizeof(len));
 	wifi_calibration_size_set();
 	return 0;
