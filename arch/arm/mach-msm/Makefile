@@ -16,6 +16,7 @@ obj-$(CONFIG_MSM_FIQ_SUPPORT) += fiq_glue.o
 obj-$(CONFIG_MSM_SMD) += smd.o smd_debug.o
 obj-$(CONFIG_MSM_SMD) += smd_tty.o smd_qmi.o
 obj-$(CONFIG_MSM_SMD) += last_radio_log.o
+obj-$(CONFIG_MSM_DAL) += dal.o
 obj-$(CONFIG_MSM_ONCRPCROUTER) += smd_rpcrouter.o
 obj-$(CONFIG_MSM_ONCRPCROUTER) += smd_rpcrouter_device.o
 obj-$(CONFIG_MSM_ONCRPCROUTER) += smd_rpcrouter_servers.o
@@ -51,7 +52,6 @@ obj-$(CONFIG_MACH_MAHIMAHI) += board-mahimahi-wifi.o board-mahimahi-audio.o
 obj-$(CONFIG_MACH_MAHIMAHI) += msm_vibrator.o
 obj-$(CONFIG_MACH_MAHIMAHI) += board-mahimahi-microp.o
 obj-$(CONFIG_MACH_MAHIMAHI) += htc_acoustic_qsd.o
-
 obj-$(CONFIG_MACH_HALIBUT) += board-halibut.o devices-msm7x00.o
 obj-$(CONFIG_MACH_HALIBUT) += board-halibut-keypad.o
 obj-$(CONFIG_MACH_HALIBUT) += board-halibut-panel.o fish_battery.o

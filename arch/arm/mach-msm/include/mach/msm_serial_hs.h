@@ -40,11 +40,6 @@ struct msm_serial_hs_platform_data {
 	unsigned char bt_wakeup_pin;	/* Device to Chip */
 	unsigned char host_wakeup_pin;	/* Chip to Device */
 
-	/* only for legend? */
-	void (*config_as_uart)(void);
-	void (*config_as_gpio)(void);
-	int (*need_config)(void);
-
 	void (*exit_lpm_cb)(struct uart_port *);
 };
 

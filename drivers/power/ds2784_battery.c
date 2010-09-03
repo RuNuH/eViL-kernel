@@ -59,6 +59,7 @@ struct battery_status {
 	u8 charge_mode;
 } __attribute__((packed));
 
+
 #define SOURCE_NONE	0
 #define SOURCE_USB	1
 #define SOURCE_AC	2
@@ -445,24 +446,32 @@ static int battery_adjust_charge_state(struct ds2784_device_info *di)
 	 * - CHGTF flag is set
 	 */
 	/* We don't move from full to not-full until
-	* we drop below 95%, to avoid confusing the
-	* user while we're maintaining a full charge
-	* (slowly draining to 95 and charging back
-	* to 100)
-	* Oddly, only Passion is for 99% cycles, HTC
-	* set the Bravo to 95%.
-	*/
-	if (di->status.percentage < 95) {
+	 * we drop below 95%, to avoid confusing the
+	 * user while we're maintaining a full charge
+	 * (slowly draining to 95 and charging back
+	 * to 100)
+	 * Oddly, only Passion is for 99% cycles, HTC
+	 * set the Bravo to 95%.
+         * -od of xbravoteam
+         *
+         * Set 99 for Passion - pershoot
+	 */
+
+	if (di->status.percentage < 99) {
 		di->status.battery_full = 0;
 	}
 
 	/* Modified check function, based on original HTC Source.
 	 * Added current_uA check (relates to 1400mAh capacity check)
+         * -od of xbravoteam
+         *
+         * replace current_uA <= 80 with current_avg_uA <= 40 
+         * - pershoot,dvgrhl,rogerpodacter
 	 */
 
 	if ((di->status.status_reg & 0x80) &&
-	    ((di->status.current_uA/1000) <= 80) &&
-	    (di->status.percentage == 100)) {
+		 ((di->status.current_avg_uA/1000) <= 40) &&
+		(di->status.percentage == 100)) {
 		di->status.battery_full = 1;
 		charge_mode = CHARGE_BATT_DISABLE;
 	}

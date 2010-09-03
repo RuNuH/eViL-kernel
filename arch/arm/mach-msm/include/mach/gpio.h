@@ -22,11 +22,6 @@
 
 #define FIRST_BOARD_GPIO	NR_GPIO_IRQS
 
-#define GPIOF_INPUT             0x00020000
-#define GPIOF_DRIVE_OUTPUT      0x00040000
-#define GPIOF_OUTPUT_LOW        0x00080000
-#define GPIOF_OUTPUT_HIGH       0x00100000
-
 static inline int gpio_get_value(unsigned gpio)
 {
 	return __gpio_get_value(gpio);
@@ -169,7 +164,5 @@ enum {
 #define GPIO_DRVSTR(gpio_cfg) (((gpio_cfg) >> 17) & 0xf)
 
 int gpio_tlmm_config(unsigned config, unsigned disable);
-
-extern int gpio_configure(unsigned int gpio, unsigned long flags);
 
 #endif /* __ASM_ARCH_MSM_GPIO_H */

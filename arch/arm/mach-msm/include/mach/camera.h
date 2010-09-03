@@ -1,5 +1,19 @@
-/*
- * Copyright (C) 2008-2009 QUALCOMM Incorporated.
+/* Copyright (c) 2009, Code Aurora Forum. All rights reserved.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 and
+ * only version 2 as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * 02110-1301, USA.
+ *
  */
 
 #ifndef __ASM__ARCH_CAMERA_H
@@ -51,7 +65,13 @@ enum vfe_resp_msg {
 	VFE_MSG_OUTPUT_V,   /* video   (continuous mode ) */
 #endif
 	VFE_MSG_STATS_AF,
-	VFE_MSG_STATS_WE,
+	VFE_MSG_STATS_WE, /* AEC + AWB */
+	VFE_MSG_STATS_AEC,
+	VFE_MSG_STATS_AWB,
+	VFE_MSG_STATS_RS,
+	VFE_MSG_STATS_CS,
+	VFE_MSG_STATS_IHIST,
+	VFE_MSG_STATS_SKIN,
 };
 
 struct msm_vfe_phy_info {
@@ -117,51 +137,6 @@ struct msm_device_queue {
 };
 
 struct msm_sync {
-#ifdef CONFIG_MSM_CAMERA_OLD
-        /* These two queues are accessed from a process context only. */
-        struct hlist_head frame; /* most-frequently accessed */
-        struct hlist_head stats;
-
-        /* The message queue is used by the control thread to send commands
-         * to the config thread, and also by the DSP to send messages to the
-         * config thread.  Thus it is the only queue that is accessed from
-         * both interrupt and process context.
-         */
-        spinlock_t msg_event_q_lock;
-        struct list_head msg_event_q;
-        wait_queue_head_t msg_event_wait;
-
-        /* This queue contains preview frames. It is accessed by the DSP (in
-         * in interrupt context, and by the frame thread.
-         */
-        spinlock_t prev_frame_q_lock;
-        struct list_head prev_frame_q;
-        wait_queue_head_t prev_frame_wait;
-        int unblock_poll_frame;
-
-        /* This queue contains snapshot frames.  It is accessed by the DSP (in
-         * interrupt context, and by the control thread.
-         */
-        spinlock_t pict_frame_q_lock;
-        struct list_head pict_frame_q;
-        wait_queue_head_t pict_frame_wait;
-
-        struct msm_camera_sensor_info *sdata;
-        struct msm_camvfe_fn vfefn;
-        struct msm_sensor_ctrl sctrl;
-        struct wake_lock wake_lock;
-        struct platform_device *pdev;
-        uint8_t opencnt;
-        void *cropinfo;
-        int  croplen;
-        unsigned pict_pp;
-        uint8_t pp_sync_flag;
-
-        const char *apps_id;
-
-        struct mutex lock;
-        struct list_head list;
-#else
 	/* These two queues are accessed from a process context only.  They contain
 	 * pmem descriptors for the preview frames and the stats coming from the
 	 * camera sensor.
@@ -210,7 +185,7 @@ struct msm_sync {
 
 	struct mutex lock;
 	struct list_head list;
-#endif
+	int get_pic_abort;
 };
 
 #define MSM_APPS_ID_V4L2 "msm_v4l2"
@@ -226,22 +201,6 @@ struct msm_device {
 	atomic_t opened;
 };
 
-#ifdef CONFIG_MSM_CAMERA_OLD
-struct msm_control_device_queue {
-        spinlock_t ctrl_status_q_lock;
-        struct list_head ctrl_status_q;
-        wait_queue_head_t ctrl_status_wait;
-};
-
-struct msm_control_device {
-        struct msm_device *pmsm;
-
-        /* This queue used by the config thread to send responses back to the
-         * control thread.  It is accessed only from a process context.
-         */
-        struct msm_control_device_queue ctrl_q;
-};
-#else
 struct msm_control_device {
 	struct msm_device *pmsm;
 
@@ -255,7 +214,6 @@ struct msm_control_device {
 	 */
 	struct msm_device_queue ctrl_q;
 };
-#endif
 
 struct register_address_value_pair {
 	uint16_t register_address;
@@ -317,6 +275,14 @@ enum msm_camio_clk_type {
 	CAMIO_MDC_CLK,
 	CAMIO_VFE_CLK,
 	CAMIO_VFE_AXI_CLK,
+
+	CAMIO_VFE_CAMIF_CLK,
+	CAMIO_VFE_PBDG_CLK,
+	CAMIO_CAM_MCLK_CLK,
+	CAMIO_CAMIF_PAD_PBDG_CLK,
+	CAMIO_CSI_CLK,
+	CAMIO_CSI_VFE_CLK,
+	CAMIO_CSI_PCLK,
 	CAMIO_MAX_CLK
 };
 

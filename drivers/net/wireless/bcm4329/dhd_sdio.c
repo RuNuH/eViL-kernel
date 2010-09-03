@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: dhd_sdio.c,v 1.157.2.27.2.33.2.126 2010/06/15 23:38:39 Exp $
+ * $Id: dhd_sdio.c,v 1.157.2.27.2.33.2.125 2010/06/04 02:52:15 Exp $
  */
 
 #include <typedefs.h>
@@ -126,7 +126,7 @@
  * for HT availability, it could take a couple hundred ms more, so
  * max out at a half second (500000us).
  */
-#if (PMU_MAX_TRANSITION_DLY < 1000000)
+#if (PMU_MAX_TRANSITION_DLY <= 1000000)
 #undef PMU_MAX_TRANSITION_DLY
 #define PMU_MAX_TRANSITION_DLY 1000000
 #endif

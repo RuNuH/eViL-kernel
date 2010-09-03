@@ -65,6 +65,21 @@ struct camera_flash_cfg {
         uint8_t postpone_led_mode;
 };
 
+#ifdef CONFIG_MSM_CAMERA_OLD
+struct msm_camera_sensor_info {
+        const char *sensor_name;
+        int sensor_reset;
+        int sensor_pwd;
+        int vcm_pwd;
+        int mclk;
+        int num_flash_levels;
+        int (*camera_flash)(int level);
+        int need_suspend;
+        struct msm_camera_device_platform_data *pdata;
+        struct resource *resource;
+        uint8_t num_resources;
+};
+#else
 struct msm_camera_sensor_info {
         const char *sensor_name;
         int sensor_reset;
@@ -83,6 +98,7 @@ struct msm_camera_sensor_info {
         int flash_type; /* for back support */
         struct camera_flash_cfg* flash_cfg;
 };
+#endif
 
 struct snd_endpoint {
 	int id;

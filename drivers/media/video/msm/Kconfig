@@ -23,10 +23,10 @@ config MSM_CAMERA_DEBUG
 	  Enable printk() debug for msm camera
 
 config 720P_CAMERA
-        bool "Qualcomm MSM camera with 720P video support"
-        depends on MSM_CAMERA
-        help
-          720P video support
+	bool "Qualcomm MSM camera with 720P video support"
+	depends on MSM_CAMERA
+	help
+	  720P video support
 
 comment "Camera Sensor Selection"
 config MT9T013
