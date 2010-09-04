@@ -36,7 +36,7 @@
 #else
 #define HTC_PROCEDURE_SET_VIB_ON_OFF	21
 #endif
-#define PMIC_VIBRATOR_LEVEL	(3000)
+#define PMIC_VIBRATOR_LEVEL	(1500)
 
 static struct work_struct vibrator_work;
 static struct hrtimer vibe_timer;
