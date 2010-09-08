@@ -419,6 +419,55 @@ static struct lcm_tbl samsung_oled_gamma_table[][OLED_GAMMA_TABLE_SIZE] = {
 					  SAMSUNG_OLED_MIN_VAL) /	\
 					 (SAMSUNG_OLED_NUM_LEVELS - 1))
 
+#define LCM_GPIO_CFG(gpio, func) \
+PCOM_GPIO_CFG(gpio, func, GPIO_OUTPUT, GPIO_NO_PULL, GPIO_4MA)
+static uint32_t samsung_oled_on_gpio_table[] = {
+        LCM_GPIO_CFG(MAHIMAHI_LCD_R1, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_R2, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_R3, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_R4, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_R5, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_G0, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_G1, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_G2, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_G3, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_G4, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_G5, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_B1, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_B2, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_B3, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_B4, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_B5, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_PCLK, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_VSYNC, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_HSYNC, 1),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_DE, 1),
+};
+
+
+static uint32_t samsung_oled_off_gpio_table[] = {
+        LCM_GPIO_CFG(MAHIMAHI_LCD_R1, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_R2, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_R3, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_R4, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_R5, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_G0, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_G1, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_G2, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_G3, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_G4, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_G5, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_B1, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_B2, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_B3, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_B4, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_B5, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_PCLK, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_VSYNC, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_HSYNC, 0),
+        LCM_GPIO_CFG(MAHIMAHI_LCD_DE, 0),
+};
+#undef LCM_GPIO_CFG
 
 #define SONY_TFT_DEF_USER_VAL         102
 #define SONY_TFT_MIN_USER_VAL         30
@@ -478,6 +527,25 @@ static void samsung_oled_set_gamma_val(int val)
 	last_val = val;
 }
 
+static void samsung_oled_panel_config_gpio_table(uint32_t *table, int len)
+{
+	int n;
+	unsigned id;
+	for (n = 0; n < len; n++) {
+		id = table[n];
+		msm_proc_comm(PCOM_RPC_GPIO_TLMM_CONFIG_EX, &id, 0);
+	}
+}
+
+static int samsung_oled_panel_gpio_switch (int on)
+{
+	samsung_oled_panel_config_gpio_table (
+			!!on ? samsung_oled_on_gpio_table : samsung_oled_off_gpio_table,
+			ARRAY_SIZE(samsung_oled_on_gpio_table));
+
+	return 0;
+}
+
 static int samsung_oled_panel_init(struct msm_lcdc_panel_ops *ops)
 {
 	pr_info("%s: +()\n", __func__);
@@ -500,13 +568,14 @@ static int samsung_oled_panel_unblank(struct msm_lcdc_panel_ops *ops)
 	pr_info("%s: +()\n", __func__);
 
 	mutex_lock(&panel_lock);
+	samsung_oled_panel_gpio_switch(1);
 
 	gpio_set_value(MAHIMAHI_GPIO_LCD_RST_N, 1);
 	udelay(50);
 	gpio_set_value(MAHIMAHI_GPIO_LCD_RST_N, 0);
 	udelay(20);
 	gpio_set_value(MAHIMAHI_GPIO_LCD_RST_N, 1);
-	mdelay(20);
+	msleep(20);
 
 	clk_enable(spi_clk);
 
@@ -518,7 +587,7 @@ static int samsung_oled_panel_unblank(struct msm_lcdc_panel_ops *ops)
 	table_sel_idx = 0;
 	gamma_table_bank_select();
 	samsung_oled_set_gamma_val(last_val);
-	udelay(250);
+	msleep(250);
 	lcm_writeb(0x14, 0x03);
 	clk_disable(spi_clk);
 
@@ -538,9 +607,10 @@ static int samsung_oled_panel_blank(struct msm_lcdc_panel_ops *ops)
 	mdelay(1);
 	lcm_writeb(0x1d, 0xa1);
 	clk_disable(spi_clk);
-	udelay(200);
+	msleep(200);
 
 	gpio_set_value(MAHIMAHI_GPIO_LCD_RST_N, 0);
+	samsung_oled_panel_gpio_switch(0);
 
 	mutex_unlock(&panel_lock);
 	pr_info("%s: -()\n", __func__);
@@ -724,14 +794,14 @@ static int sony_tft_panel_unblank(struct msm_lcdc_panel_ops *ops)
 	}
 
 	sony_tft_panel_power(1);
-	udelay(45);
+	msleep(45);
 
 	clk_enable(spi_clk);
 	qspi_send_9bit(0x0, 0x11);
-	udelay(5);
+	msleep(5);
 	qspi_send_9bit(0x0, 0x3a);
 	qspi_send_9bit(0x1, 0x05);
-	udelay(100);
+	msleep(100);
 	qspi_send_9bit(0x0, 0x29);
 	/* unlock register page for pwm setting */
 	qspi_send_9bit(0x0, 0xf0);
@@ -748,7 +818,7 @@ static int sony_tft_panel_unblank(struct msm_lcdc_panel_ops *ops)
 	qspi_send_9bit(0x1, 0x53);
 	qspi_send_9bit(0x1, 0x12);
 	clk_disable(spi_clk);
-	udelay(100);
+	msleep(100);
 	tft_panel_on = 1;
 	sony_tft_set_pwm_val(last_val);
 
@@ -769,7 +839,7 @@ static int sony_tft_panel_blank(struct msm_lcdc_panel_ops *ops)
 	qspi_send_9bit(0x0, 0x10);
 	clk_disable(spi_clk);
 
-	udelay(40);
+	msleep(40);
 	sony_tft_panel_power(0);
 	tft_panel_on = 0;
 
